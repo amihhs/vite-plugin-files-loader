@@ -16,15 +16,95 @@
 
     export default {
       plugins: [
-        FilesLoader()
+        FilesLoader({
+          paths: './demos',
+          resolveChildrenBase: 'src',
+          enableResolveLongChildren: true,
+        })
       ],
     }
     ```
 
+3. Usage
+
+```ts
+/**
+ * |-demos
+ *    |-button
+ *        |-src
+ *          |-basic
+ *            |-index.html
+ */
+import DEMOS from 'virtual:files-loader' // =>  /demos/..
+import BUTTON_DEMOS from 'virtual:files-loader/button' // => /demos/button/src/..
+import BUTTON_BASIC_DEMOS from 'virtual:demo-loader/button/basic' // => /demos/button/src/basic/..
+
+
+```
+
+```json
+// virtual:files-loader
+{
+  "__default": [
+    {
+      "name": "button",
+      "children": [
+        {
+          "name": "basic",
+          "children": [
+            {
+              "name": "index.html",
+              "content": "...",
+              "language": "html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "index.html",
+      "content": "...",
+      "language": "html"
+    }
+  ]
+}
+
+
+// virtual:files-loader/button
+{
+  "name": "button",
+  "children": [
+    {
+      "name": "basic",
+      "children": [
+        {
+          "name": "index.html",
+          "content": "...",
+          "language": "html"
+        }
+      ]
+    }
+  ]
+}
+
+
+// virtual:demo-loader/button/basic
+{
+  "name": "basic",
+  "children": [
+    {
+      "name": "index.html",
+      "content": "...",
+      "language": "html"
+    }
+  ]
+}
+```
+
 ## Options
 
 ```ts
-export interface DemoLoaderPluginOptions {
+export interface FilesLoaderPluginOptions {
   /**
    * Relative paths will be based on root
    * @default process.cwd()

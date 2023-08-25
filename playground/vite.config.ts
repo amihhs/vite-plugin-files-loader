@@ -13,7 +13,9 @@ export default defineConfig({
   },
   plugins: [
     FilesLoader({
-      paths: './demo'
+      paths: './demo',
+      resolveChildrenBase: 'src',
+      enableResolveLongChildren: true,
     }),
   ],
   build: {
