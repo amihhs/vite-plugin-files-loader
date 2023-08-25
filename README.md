@@ -1,5 +1,10 @@
 # vite-plugin-loader-files
 
+[![npm](https://img.shields.io/npm/v/vite-plugin-files-loader.svg)](https://npmjs.com/package/vite-plugin-files-loader)
+![npm](https://img.shields.io/npm/dm/vite-plugin-files-loader)
+
+A vite plugin that reads file content in batches.
+
 ## Usage
 
 1. NPM Install  

@@ -2,7 +2,8 @@
   "name": "vite-plugin-files-loader",
   "type": "module",
   "version": "0.0.0",
-  "description": "amihhs shared utils",
+  "packageManager": "pnpm@8.6.10",
+  "description": "A vite plugin that reads file content in batches",
   "author": {
     "name": "amihhs",
     "email": "amihhs369@gmail.com",
@@ -12,8 +13,7 @@
   "homepage": "https://github.com/amihhs/vite-plugin-files-loader",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/amihhs/vite-plugin-files-loader.git",
-    "directory": "packages/utils"
+    "url": "git+https://github.com/amihhs/vite-plugin-files-loader.git"
   },
   "bugs": {
     "url": "https://github.com/amihhs/vite-plugin-files-loader"
