@@ -1,0 +1,84 @@
+{
+  "name": "vite-plugin-files-loader",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "amihhs shared utils",
+  "author": {
+    "name": "amihhs",
+    "email": "amihhs369@gmail.com",
+    "url": "https://github.com/amihhs"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/amihhs/vite-plugin-files-loader",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amihhs/vite-plugin-files-loader.git",
+    "directory": "packages/utils"
+  },
+  "bugs": {
+    "url": "https://github.com/amihhs/vite-plugin-files-loader"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "files",
+    "loader",
+    "raw"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./client": {
+      "types": "./client.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "*d.ts"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "build": "rimraf dist && unbuild",
+    "stub": "unbuild --stub",
+    "dev": "esno ./src/index.ts",
+    "play": "vite playground",
+    "lint": "eslint ./src --fix",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "release": "bumpp"
+  },
+  "peerDependencies": {
+    "vite": "^4.0.0 || ^3.0.0"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.41.0",
+    "@types/node": "^20.5.6",
+    "bumpp": "^9.2.0",
+    "eslint": "^8.47.0",
+    "jiti": "^1.19.3",
+    "lint-staged": "^14.0.1",
+    "rimraf": "^5.0.1",
+    "simple-git-hooks": "^2.9.0",
+    "typescript": "^5.2.2",
+    "unbuild": "^2.0.0",
+    "vitest": "^0.34.2"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.{vue,js,ts,jsx,tsx,md,json,yml}": "eslint --fix"
+  }
+}
