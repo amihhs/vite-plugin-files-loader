@@ -1,12 +1,14 @@
 import type { Alias } from 'vite'
 
 export interface FilesLoaderFile {
+  type: 'file'
   name: string
   content: string
   language: string
 }
 
 export interface FilesLoaderDir {
+  type: 'directory'
   name: string
   children: (FilesLoaderDir | FilesLoaderFile)[]
 }

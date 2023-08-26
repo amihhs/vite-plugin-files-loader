@@ -50,6 +50,7 @@ export function getRootModuleContent(_id: string, context: FilesLoaderPluginCont
       if (fs.statSync(childPath).isDirectory()) {
         childPath = resolveNormalToChildPath(childPath, context)
         children.push({
+          type: 'directory',
           name: p,
           children: getDirectoryFabric(childPath, context),
         })
@@ -79,10 +80,11 @@ export function getFileContent(filePath: string): FilesLoaderFile {
   const ext = filePath.split('.').pop()
   const name = filePath.split('/').pop() || filePath
   const file = {
+    type: 'file',
     name,
     content,
     language: ext || '',
-  }
+  } as FilesLoaderFile
   return file
 }
 export function getDirectoryFabric(dirPath: string, context: FilesLoaderPluginContext): FilesLoaderItem[] {
@@ -99,6 +101,7 @@ export function getDirectoryFabric(dirPath: string, context: FilesLoaderPluginCo
     const stat = fs.statSync(itemPath)
     if (stat.isDirectory()) {
       children.push({
+        type: 'directory',
         name: item,
         children: getDirectoryFabric(itemPath, context),
       })
@@ -108,6 +111,7 @@ export function getDirectoryFabric(dirPath: string, context: FilesLoaderPluginCo
       if (context.extensions.includes(`.${ext}`)) {
         const content = fs.readFileSync(itemPath, 'utf-8')
         children.push({
+          type: 'file',
           name: item,
           content,
           language: ext || '',
