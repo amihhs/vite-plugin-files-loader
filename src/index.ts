@@ -4,7 +4,7 @@ import { PLUGIN_NAME, RESOLVE_VIRTUAL_MODULE_ID, VIRTUAL_MODULE_ID } from './con
 import { getVirtualModuleContent } from './content'
 import type { FilesLoaderPluginContext, FilesLoaderPluginOptions } from './types'
 import { resolvePath, resolveVirtualToChildPath, toPosix } from './fs'
-import { isFunction, isString } from './shared'
+import { isString } from './shared'
 
 export * from './types'
 
