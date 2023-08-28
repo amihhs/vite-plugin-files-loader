@@ -4,7 +4,7 @@ import { PLUGIN_NAME, RESOLVE_VIRTUAL_MODULE_ID, VIRTUAL_MODULE_ID } from './con
 import { getVirtualModuleContent } from './content'
 import type { FilesLoaderPluginContext, FilesLoaderPluginOptions } from './types'
 import { resolvePath, resolveVirtualToChildPath, toPosix } from './fs'
-import { isString } from './shared'
+import { isFunction, isString } from './shared'
 
 export * from './types'
 
@@ -71,6 +71,7 @@ function FilesLoaderPlugin(options: FilesLoaderPluginOptions = {}): PluginOption
     }
     return modules
   }
+  const rootOutsidePaths: string[] = []
 
   const plugin: PluginOption = {
     name: PLUGIN_NAME,
@@ -81,13 +82,15 @@ function FilesLoaderPlugin(options: FilesLoaderPluginOptions = {}): PluginOption
         replacement: toPosix(i.replacement),
       }))
 
+      const viteRoot = e.root
       const paths: Record<string, string> = isString(options.paths) ? { __default: options.paths } : (options.paths || {})
-      for (const key in paths)
-        paths[key] = resolvePath(toPosix(paths[key]), { alias: context.alias, root: context.root })
-
+      for (const key in paths) {
+        const path = resolvePath(toPosix(paths[key]), { alias: context.alias, root: context.root })
+        paths[key] = path
+        if (!path.startsWith(viteRoot))
+          rootOutsidePaths.push(path)
+      }
       context.paths = paths
-
-      // console.log('configResolved', JSON.stringify(context))
     },
     configureServer(_server) {
       server = _server
@@ -103,7 +106,9 @@ function FilesLoaderPlugin(options: FilesLoaderPluginOptions = {}): PluginOption
         })
         reload && _server.ws.send({ type: 'full-reload' })
       }
+      server.watcher.add(rootOutsidePaths)
       server.watcher.on('unlink', handleFileAddUnlink)
+      server.watcher.on('add', () => _server.ws.send({ type: 'full-reload' }))
     },
     buildStart() {
       map.clear()

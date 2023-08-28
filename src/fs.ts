@@ -10,7 +10,7 @@ export function toPosix(path: string): string {
 
 export function getDirectoryChildrenPath(dirPath: string): string[] {
   if (!fs.existsSync(dirPath))
-    throw new Error(`[vite-plugin-demo] can not find directory: ${dirPath}`)
+    throw new Error(`[vite-plugin-demo] getDirectoryChildrenPath:can not find directory: ${dirPath}`)
 
   if (!fs.statSync(dirPath).isDirectory())
     throw new Error(`[vite-plugin-demo]  isn't directory: ${dirPath}`)

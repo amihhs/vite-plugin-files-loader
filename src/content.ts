@@ -23,7 +23,6 @@ export function getVirtualModuleContent(id: string, context: FilesLoaderPluginCo
 export function getChildrenModuleContent(id: string, context: FilesLoaderPluginContext) {
   const name = id.replace(RESOLVE_VIRTUAL_MODULE_ID, '').replace(/^\//, '').split('/').pop()
   const childPath = resolveVirtualToChildPath(id, context)
-
   const children: FilesLoaderItem[] = getDirectoryFabric(childPath, context)
 
   const content = {
@@ -89,7 +88,7 @@ export function getFileContent(filePath: string): FilesLoaderFile {
 }
 export function getDirectoryFabric(dirPath: string, context: FilesLoaderPluginContext): FilesLoaderItem[] {
   if (!fs.existsSync(dirPath))
-    throw new Error(`[vite-plugin-demo] can not find directory: ${dirPath}`)
+    throw new Error(`[vite-plugin-demo] getDirectoryFabric:can not find directory: ${dirPath}`)
 
   if (!fs.statSync(dirPath).isDirectory())
     throw new Error(`[vite-plugin-demo]  isn't directory: ${dirPath}`)
