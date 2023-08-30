@@ -2,11 +2,12 @@ import process from 'node:process'
 import type { ModuleNode, PluginOption, ViteDevServer } from 'vite'
 import { PLUGIN_NAME, RESOLVE_VIRTUAL_MODULE_ID, VIRTUAL_MODULE_ID } from './const'
 import { getVirtualModuleContent } from './content'
-import type { FilesLoaderPluginContext, FilesLoaderPluginOptions } from './types'
+import type { FilesLoaderItem, FilesLoaderPluginContext, FilesLoaderPluginOptions } from './types'
 import { resolvePath, resolveVirtualToChildPath, toPosix } from './fs'
 import { isString } from './shared'
 
 export * from './types'
+export * from './shared'
 
 function FilesLoaderPlugin(options: FilesLoaderPluginOptions = {}): PluginOption {
   const {
@@ -16,6 +17,7 @@ function FilesLoaderPlugin(options: FilesLoaderPluginOptions = {}): PluginOption
     extensions = ['.html', '.css', '.js', '.ts'],
     resolveChildrenBase = '/',
     enableResolveLongChildren = true,
+    dynamicImport = true,
   } = options
 
   const context: FilesLoaderPluginContext = {
@@ -26,6 +28,7 @@ function FilesLoaderPlugin(options: FilesLoaderPluginOptions = {}): PluginOption
     extensions,
     resolveChildrenBase,
     enableResolveLongChildren,
+    dynamicImport,
   }
 
   let server: ViteDevServer | undefined
@@ -121,7 +124,11 @@ function FilesLoaderPlugin(options: FilesLoaderPluginOptions = {}): PluginOption
       if (id === RESOLVE_VIRTUAL_MODULE_ID || id.startsWith(RESOLVE_VIRTUAL_MODULE_ID)) {
         const { files, content } = getVirtualModuleContent(id, context)
         map.set(id, files)
-        return content
+
+        if (!context.dynamicImport)
+          return `${JSON.stringify(content)} \n\n export default contents`
+        else
+          return runDynamicImport(content)
       }
     },
     async handleHotUpdate(ctx) {
@@ -138,3 +145,21 @@ function FilesLoaderPlugin(options: FilesLoaderPluginOptions = {}): PluginOption
 }
 
 export default FilesLoaderPlugin
+
+function runDynamicImport(data: FilesLoaderItem[] | Record<string, FilesLoaderItem[]>) {
+  const needReplaces: string[] = []
+  let contents = `export default ${JSON.stringify(data, (key, value) => {
+    if (typeof value === 'function') {
+      needReplaces.push(value.toString())
+      return value.toString()
+    }
+    return value
+  }, 2)}`
+
+  for (const item of needReplaces)
+    contents = contents.replace(`"${item}"`, `${item}`)
+
+  // console.log(contents)
+
+  return contents
+}

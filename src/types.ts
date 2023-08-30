@@ -3,7 +3,7 @@ import type { Alias } from 'vite'
 export interface FilesLoaderFile {
   type: 'file'
   name: string
-  content: string
+  content: string | (() => Promise<{ default: string }>)
   language: string
 }
 
@@ -63,4 +63,6 @@ export interface FilesLoaderPluginOptions {
    *  => ...button/src/basic
    */
   enableResolveLongChildren?: boolean
+
+  dynamicImport?: boolean
 }

@@ -5,15 +5,12 @@ import type { FilesLoaderFile, FilesLoaderItem, FilesLoaderPluginContext } from 
 import { isString } from './shared'
 import { getDirectoryChildrenPath, resolveNormalToChildPath, resolveVirtualToChildPath, toPosix } from './fs'
 
-const defaultExport = 'export default {}'
-
 export function getVirtualModuleContent(id: string, context: FilesLoaderPluginContext) {
   const { paths } = context
   if (!isString(paths) && Object.keys(paths).length === 0)
-    return { content: defaultExport, files: [] }
+    return { content: {}, files: [] }
 
   const isChildren = id.startsWith(RESOLVE_VIRTUAL_MODULE_ID) && id !== RESOLVE_VIRTUAL_MODULE_ID
-  // console.log('getVirtualModuleContent', id, isChildren)
   if (isChildren)
     return getChildrenModuleContent(id, context)
   else
@@ -25,13 +22,12 @@ export function getChildrenModuleContent(id: string, context: FilesLoaderPluginC
   const childPath = resolveVirtualToChildPath(id, context)
   const children: FilesLoaderItem[] = getDirectoryFabric(childPath, context)
 
-  const content = {
-    name,
-    children,
-  }
+  const content = children
+
+  const files = getFilesPath(children, childPath)
   return {
-    content: `export default ${JSON.stringify(content)}`,
-    files: [],
+    content,
+    files,
   }
 }
 
@@ -56,7 +52,7 @@ export function getRootModuleContent(_id: string, context: FilesLoaderPluginCont
         continue
       }
 
-      children.push(getFileContent(childPath))
+      children.push(getFileContent(childPath, context))
     }
     contents[key] = children
   }
@@ -68,12 +64,12 @@ export function getRootModuleContent(_id: string, context: FilesLoaderPluginCont
   }
 
   return {
-    content: `export default ${JSON.stringify(contents)}`,
+    content: contents,
     files,
   }
 }
 
-export function getFileContent(filePath: string): FilesLoaderFile {
+export function getFileContent(filePath: string, context: FilesLoaderPluginContext): FilesLoaderFile {
   filePath = toPosix(filePath)
   const content = fs.readFileSync(filePath, 'utf-8')
   const ext = filePath.split('.').pop()
@@ -81,11 +77,20 @@ export function getFileContent(filePath: string): FilesLoaderFile {
   const file = {
     type: 'file',
     name,
-    content,
+    content: context.dynamicImport ? `() => import('/@fs/${filePath}?raw')` : content,
     language: ext || '',
+  }
+  return {
+    ...file,
+    content: context.dynamicImport ? evalFn(file.content) : file.content,
   } as FilesLoaderFile
-  return file
 }
+
+function evalFn(fn: string) {
+  // eslint-disable-next-line no-new-func
+  return new Function(`return ${fn}`)()
+}
+
 export function getDirectoryFabric(dirPath: string, context: FilesLoaderPluginContext): FilesLoaderItem[] {
   if (!fs.existsSync(dirPath))
     throw new Error(`[vite-plugin-demo] getDirectoryFabric:can not find directory: ${dirPath}`)
@@ -109,11 +114,16 @@ export function getDirectoryFabric(dirPath: string, context: FilesLoaderPluginCo
       const ext = item.split('.').pop()
       if (context.extensions.includes(`.${ext}`)) {
         const content = fs.readFileSync(itemPath, 'utf-8')
-        children.push({
+        const childItem = {
           type: 'file',
           name: item,
-          content,
+          content: context.dynamicImport ? `() => import('/@fs/${itemPath}?raw')` : content,
           language: ext || '',
+        } as const
+
+        children.push({
+          ...childItem,
+          content: context.dynamicImport ? evalFn(childItem.content) : childItem.content,
         })
       }
     }
