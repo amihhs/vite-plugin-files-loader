@@ -5,6 +5,10 @@
 
 A vite plugin that reads file content in batches.
 
+Emmmm....
+
+You can use `import.meta.glob` to achieve similar functionality. It can also use `alias` and `{ as: 'raw' }` to import corresponding files. This package may not mean much to you.
+
 ## Usage
 
 1. NPM Install  
@@ -44,7 +48,14 @@ A vite plugin that reads file content in batches.
     import BUTTON_DEMOS from 'virtual:files-loader/button' // => /demos/button/src/..
     import BUTTON_BASIC_DEMOS from 'virtual:demo-loader/button/basic' // => /demos/button/src/basic/..
 
+    ```
 
+    > If you want to use dynamicImport option, you can to use the following function to resolve/import the content of the file
+
+    ```ts
+    import { resolveImportPaths, resolveImportFiles } from 'vite-plugin-files-loader'
+    const demos = resolveImportPaths(DEMOS)
+    const childDemos = resolveImportFiles(BUTTON_DEMOS)
     ```
 
     ```ts
@@ -76,9 +87,7 @@ A vite plugin that reads file content in batches.
 
 
     // virtual:files-loader/button
-    {
-      "name": "button",
-      "children": [
+    [
         {
           "name": "basic",
           "children": [
@@ -89,21 +98,18 @@ A vite plugin that reads file content in batches.
             }
           ]
         }
-      ]
-    }
+    ]
 
 
     // virtual:demo-loader/button/basic
-    {
-      "name": "basic",
-      "children": [
-        {
-          "name": "index.html",
-          "content": "...",
-          "language": "html"
-        }
-      ]
-    }
+
+  [
+      {
+        "name": "index.html",
+        "content": "...",
+        "language": "html"
+      }
+  ]
     ```
 
 ## Options
@@ -151,5 +157,10 @@ export interface FilesLoaderPluginOptions {
    *  => ...button/src/basic
    */
   enableResolveLongChildren?: boolean
+  /**
+   * @default false
+   * If true, the file content will be imported dynamically, and matched files are by default lazy-loaded via dynamic import and will be split into separate chunks during build
+   */
+  dynamicImport?: boolean
 }
 ```
