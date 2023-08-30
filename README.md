@@ -84,8 +84,6 @@ You can use `import.meta.glob` to achieve similar functionality. It can also use
         }
       ]
     }
-
-
     // virtual:files-loader/button
     [
         {
@@ -99,17 +97,14 @@ You can use `import.meta.glob` to achieve similar functionality. It can also use
           ]
         }
     ]
-
-
     // virtual:demo-loader/button/basic
-
-  [
-      {
-        "name": "index.html",
-        "content": "...",
-        "language": "html"
-      }
-  ]
+    [
+        {
+          "name": "index.html",
+          "content": "...",
+          "language": "html"
+        }
+    ]
     ```
 
 ## Options
