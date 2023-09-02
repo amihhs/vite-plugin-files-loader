@@ -33,6 +33,11 @@
     },
     "./client": {
       "types": "./client.d.ts"
+    },
+    "./shared": {
+      "types": "./dist/shared.d.ts",
+      "import": "./dist/shared.mjs",
+      "require": "./dist/shared.cjs"
     }
   },
   "publishConfig": {

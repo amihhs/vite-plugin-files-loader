@@ -7,7 +7,6 @@ import { resolvePath, resolveVirtualToChildPath, toPosix } from './fs'
 import { isString } from './shared'
 
 export * from './types'
-export * from './shared'
 
 function FilesLoaderPlugin(options: FilesLoaderPluginOptions = {}): PluginOption {
   const {
